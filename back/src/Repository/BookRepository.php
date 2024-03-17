@@ -24,14 +24,14 @@ class BookRepository extends ServiceEntityRepository
         /**
          * @return Book[] Returns an array of Book objects
          */
-        public function findByFilters(string|null $title, string|null $genre, int|null $publicationYear): array
+        public function findByFilters(string|null $title, string|null $genre, int|null $publicationYear, bool|null $isAvailable): array
         {
             $qb = $this
                 ->createQueryBuilder('b')
                 ->select('b');
 
             if (!is_null($title)) {
-                $qb->andWhere('b.title LIKE :title')
+                $qb->andWhere('LOWER(b.title) LIKE LOWER(:title)')
                     ->setParameter('title', '%' . $title . '%');
             }
 
@@ -49,10 +49,31 @@ class BookRepository extends ServiceEntityRepository
                     ->setParameter('to', $to);
             }
 
+            if ($isAvailable) {
+                $qb->andWhere('(SELECT COUNT(bookings.id) FROM App\Entity\Booking bookings WHERE bookings.book = b.id AND bookings.status = :status) = 0')
+                    ->setParameter('status', 'active')
+                    ->getQuery()
+                    ->getResult();
+            }
+
             return $qb
                 ->orderBy('b.id', 'ASC')
                 ->getQuery()
                 ->getArrayResult()
             ;
         }
+
+    /**
+     * @return Book Returns a Book
+     */
+    public function findById(int $id): array
+    {
+        return $this
+            ->createQueryBuilder('b')
+            ->select('b')
+            ->where('b.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Book;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -22,6 +23,14 @@ class AppFixtures extends Fixture
                 ->setPublishedAt(\DateTimeImmutable::createFromMutable($faker->dateTime()));
 
             $manager->persist($book);
+        }
+
+        for($i=0; $i<10; $i++){
+            $user = new User();
+
+            $user->setEmail($faker->email());
+
+            $manager->persist($user);
         }
 
         $manager->flush();
