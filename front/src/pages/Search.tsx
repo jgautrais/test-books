@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchBooks } from '../services/books';
 import {LoadingSpinner} from "../components/atoms";
 import {BookCard} from "../components/organisms";
-import useDebounce from "../components/hooks/useDebounce.ts";
+import useDebounce from "../hooks/useDebounce";
 
 
 function Search() {
@@ -85,10 +85,7 @@ function Search() {
             Display available books only:
             <input
               type='checkbox'
-              onChange={e => {
-                console.log(e)
-                onChangeFilter('isAvailable', e.target.checked ?? undefined)
-              }}
+              onChange={e => onChangeFilter('isAvailable', e.target.checked ?? undefined)}
               disabled={isLoading && !error}
             />
           </label>
@@ -96,9 +93,9 @@ function Search() {
         {
           isLoading || !books ? <LoadingSpinner className='mt-4'/> : (
             <div className="mt-10 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {books?.data.map(book => (
+              {books?.data.length ? books?.data.map(book => (
                 <BookCard book={book} key={book.id}/>
-              ))}
+              )) : <p>No book matching the filters</p>}
             </div>)
         }
         {

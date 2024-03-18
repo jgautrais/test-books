@@ -2,6 +2,7 @@
 
 In **back** folder:
 - install dependencies, run `composer install`
+- setup env: `cp .env.example .env`
 - setup postgreSQL DB container, run `docker compose up -d`
 - run migrations: `php bin/console doctrine:migrations:migrate`
 - run fixtures: `php bin/console doctrine:fixtures:load`
